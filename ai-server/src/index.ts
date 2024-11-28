@@ -92,9 +92,9 @@ app.post("/lm", async (c) => {
 });
 
 app.post("/lm-stream", async (c) => {
-  const { system_prompt, prompt, temp = 0 } = await c.req.json<{ system_prompt: string, prompt: string, temp: number }>();
+  const { messages, temp = 0 } = await c.req.json<{ messages: string[], temp: number }>();
 
-  if (!prompt || !system_prompt) {
+  if (!messages?.length) {
     return c.text("Invalid input schema.", 400);
   }
 
@@ -106,7 +106,7 @@ app.post("/lm-stream", async (c) => {
       });
       const completion = await openai.chat.completions.create({
         model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
-        messages: [{ role: "user", content: prompt }],
+        messages,
         max_tokens: 8192,
         temperature: temp,
         stream: true,

@@ -658,6 +658,6 @@ app.post("/wf/image-imagine", async (c) => {
 });
 
 export default {
-  port: 3000,
+  port: +Bun.env.AI_SERVER_PORT,
   fetch: app.fetch,
 }

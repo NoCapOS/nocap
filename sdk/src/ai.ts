@@ -3,8 +3,6 @@
  * @packageDocumentation
  */
 
-/// <reference lib="dom" />
-
 import axios, { AxiosRequestConfig, AxiosProgressEvent } from 'axios';
 import {
   AIClientConfig,

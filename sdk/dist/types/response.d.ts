@@ -32,3 +32,8 @@ export interface ErrorResponse {
     success: false;
     error: string;
 }
+export declare class ApiError extends Error {
+    status?: number;
+    code?: string;
+    constructor(message: string, status?: number, code?: string);
+}

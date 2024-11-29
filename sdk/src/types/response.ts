@@ -37,3 +37,14 @@ export interface ErrorResponse {
   success: false;
   error: string;
 }
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status?: number,
+    public code?: string
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}

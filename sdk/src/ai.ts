@@ -182,6 +182,220 @@ export class AIClient {
       })
     });
   }
+
+  /**
+   * Generates an image.
+   * @param options - Options for image generation.
+   * @returns A promise that resolves with the URL of the generated image.
+   */
+  async generateImage(options: ImageGenerationOptions): Promise<string> {
+    return this.request<string>('/image-imagine', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(options),
+    });
+  }
+
+  /**
+   * Performs visual analysis tasks.
+   * @param options - Options for visual tasks.
+   * @returns A promise that resolves with the analysis result.
+   */
+  async analyzeImage(options: VisualTaskOptions): Promise<any> {
+    const formData = new FormData();
+    formData.append('task', options.task);
+
+    if (options.imageUrl) {
+      formData.append('image_url', options.imageUrl);
+    }
+    if (options.file) {
+      formData.append('file', options.file);
+    }
+    if (options.prompt) {
+      formData.append('prompt', options.prompt);
+    }
+    if (options.width) {
+      formData.append('width', options.width.toString());
+    }
+    if (options.height) {
+      formData.append('height', options.height.toString());
+    }
+
+    return this.request<any>('/image-task', {
+      method: 'POST',
+      data: formData,
+    });
+  }
+
+  /**
+   * Edits an image based on a text prompt.
+   * @param options - Options for image editing.
+   * @returns A promise that resolves with the URL of the edited image.
+   */
+  async editImage(options: ImageEditOptions): Promise<string> {
+    const formData = new FormData();
+    formData.append('prompt', options.prompt);
+    formData.append('aspect_ratio', options.aspectRatio);
+
+    if (options.imageUrl) {
+      formData.append('image_url', options.imageUrl);
+    }
+    if (options.file) {
+      formData.append('file', options.file);
+    }
+
+    return this.request<string>('/image-edit', {
+      method: 'POST',
+      data: formData,
+    });
+  }
+
+  /**
+   * Inpaints an image.
+   * @param options - Options for image inpainting.
+   * @returns A promise that resolves with the URL of the inpainted image.
+   */
+  async inpaintImage(options: InpaintOptions): Promise<string> {
+    const formData = new FormData();
+    formData.append('prompt', options.prompt);
+
+    if (options.imageUrl) {
+      formData.append('image_url', options.imageUrl);
+    }
+    if (options.imageFile) {
+      formData.append('image_file', options.imageFile);
+    }
+    if (options.maskUrl) {
+      formData.append('mask_url', options.maskUrl);
+    }
+    if (options.maskFile) {
+      formData.append('mask_file', options.maskFile);
+    }
+
+    return this.request<string>('/image-fill', {
+      method: 'POST',
+      data: formData,
+    });
+  }
+
+  /**
+   * Generates speech from text.
+   * @param options - Options for voice synthesis.
+   * @returns A promise that resolves with the URL of the generated speech.
+   */
+  async speak(options: SpeakOptions): Promise<string> {
+    return this.request<string>('/speak', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(options),
+    });
+  }
+
+  /**
+   * Clones a voice.
+   * @param options - Options for voice cloning.
+   * @returns A promise that resolves with the URL of the cloned voice.
+   */
+  async cloneVoice(options: VoiceCloneOptions): Promise<string> {
+    const formData = new FormData();
+    formData.append('prompt', options.prompt);
+    formData.append('ref_text', options.refText);
+
+    if (typeof options.refAudio === 'string') {
+      formData.append('ref_audio', options.refAudio);
+    } else {
+      formData.append('ref_audio', options.refAudio);
+    }
+
+    return this.request<string>('/clone-voice', {
+      method: 'POST',
+      data: formData,
+    });
+  }
+
+  /**
+   * Uploads multiple files.
+   * @param files - Array of files to upload.
+   * @returns A promise that resolves with an array of URLs of the uploaded files.
+   */
+  async uploadFiles(files: Blob[]): Promise<string[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    return this.request<string[]>('/files', {
+      method: 'PUT',
+      data: formData,
+    });
+  }
+
+  /**
+   * Bulk describes images.
+   * @param images - Array of image URLs or files.
+   * @returns A promise that resolves with the description results.
+   */
+  async bulkDescribeImages(images: (string | Blob)[]): Promise<any> {
+    const formData = new FormData();
+
+    images.forEach(image => {
+      if (typeof image === 'string') {
+        formData.append('images', image);
+      } else {
+        formData.append('files', image);
+      }
+    });
+
+    return this.request<any>('/image-bulk-describe', {
+      method: 'POST',
+      data: formData,
+    });
+  }
+
+  /**
+   * Generates a video from an image and prompt.
+   * @param options - Options for video generation.
+   * @returns A promise that resolves with the URL of the generated video.
+   */
+  async generateVideo(options: VideoGenerationOptions): Promise<string> {
+    return this.request<string>('/runway', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(options),
+    });
+  }
+
+  /**
+   * Checks the status of video generation.
+   * @param id - The ID of the video generation task.
+   * @returns A promise that resolves with the status of the video generation.
+   */
+  async checkVideoStatus(id: string): Promise<string> {
+    return this.request<string>(`/runway?id=${id}`, {
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Synthesizes audio from text.
+   * @param options - Options for audio synthesis.
+   * @returns A promise that resolves with the URL of the synthesized audio.
+   */
+  async synthesizeAudio(options: AudioSynthesisOptions): Promise<string> {
+    return this.request<string>('/synthesize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(options),
+    });
+  }
 }
 
 
